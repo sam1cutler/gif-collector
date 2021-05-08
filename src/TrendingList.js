@@ -7,7 +7,7 @@ function TrendingList() {
     const API_KEY = '8w866KAjfH8dR7Nqp2AXitvr9xf2CZ5S'
 
     const [ gifList, setGifList ] = useState( [] );
-    // const [ sortPriority, setSortPriority ] = useState( null );
+    const [ sortPriority, setSortPriority ] = useState( null );
 
     function doTheSorting(type) {
         console.log('sorting');
@@ -18,6 +18,7 @@ function TrendingList() {
         gifList.sort( function(a, b) {
             const c = new Date(a[type]);
             const d = new Date(b[type]);
+            // console.log(d-c);
             return d-c
         })
 
@@ -28,26 +29,42 @@ function TrendingList() {
     }
 
     function handleImportClick() {
-        console.log('it did import')
+        console.log('it did import');
+        setSortPriority('import');
         doTheSorting('import_datetime');
     }
 
     function handleTrendingClick() {
-        console.log('it did trending')
+        console.log('it did trending');
+        setSortPriority('trending');
         doTheSorting('trending_datetime');
     }
 
     function handleTitleClick() {
 
-        console.log('it did title')
+        console.log('it did title');
+        setSortPriority('title');
 
         let orderedList = gifList;
 
         gifList.sort( function(a, b) {
+            // console.log(a.title)
+            // console.log(b.title)
             const c = a.title;
             const d = b.title;
-            return c-d
+
+            console.log(c-d);
+
+            if (c < d) {
+                return -1
+            } else if ( d < c ) {
+                return 1 
+            } else {
+                return 0
+            }
         })
+
+        console.log(orderedList);
 
         setGifList(orderedList);
     }
@@ -78,6 +95,7 @@ function TrendingList() {
                     to={`/gif/${gifId}`}
                 >
                     <img src={previewGifUrl} alt={gifAlt} />
+                    <p>{gifAlt}</p>
                     <p>{gifImportDate}</p>
                     <p>{gifTrendingDate}</p>
                 </Link>

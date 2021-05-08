@@ -14,7 +14,7 @@ function GifDetails() {
             .then(response => response.json())
             .then(responseJson => setGifInfo(responseJson.data));
 
-    }, [] )
+    }, [gifId] )
 
     function renderGifDetails(gifInfo) {
 
