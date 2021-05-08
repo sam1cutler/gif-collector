@@ -2,71 +2,105 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 
+// if I wanted to have the ordering persist, even after clicking to individual GIF pages and then going "back"...
+// I'd probably use context. Establish context in the App component...
+//    --> do the Trending API call in the App component
+//    --> have clicks of the filter buttons modify ordering in context
+//    --> have the GifDetails component access context, rather than a fresh API call
+// This approach would, overall, radically reduce the # of API calls.
+// Would probably also want to add a button in the TrendingList component to allow user to manual refresh,
+//    = fresh API call, to check to see if Trending list has changed since last page load.
+// That API call would be its own function, rather than within the useEffect... OR, I could add a 
+//    "user requested reload" kinda thing in state, and have the useEffect block re-fire when that thing changes ?
+
 function TrendingList() {
 
     const API_KEY = '8w866KAjfH8dR7Nqp2AXitvr9xf2CZ5S'
 
     const [ gifList, setGifList ] = useState( [] );
-    const [ sortPriority, setSortPriority ] = useState( null );
+    const [ importDirection, setImportDirection ] = useState( -1 );
+    const [ trendingDirection, setTrendingDirection ] = useState( -1 );
+    const [ titleDirection, setTitleDirection ] = useState( 1 );
 
-    function doTheSorting(type) {
-        console.log('sorting');
+    function doTheSorting(type, direction) {
 
         let orderedList = gifList;
 
-
-        gifList.sort( function(a, b) {
+        orderedList.sort( function(a, b) {
             const c = new Date(a[type]);
             const d = new Date(b[type]);
-            // console.log(d-c);
-            return d-c
-        })
 
-        console.log(orderedList);
+            let answer = 0;
+            if (direction < 0) {
+                answer = d-c;
+            } else if (direction > 0) {
+                answer = c-d;
+            }      
+            return answer;
+        })
 
         setGifList(orderedList);
 
     }
 
     function handleImportClick() {
-        console.log('it did import');
-        setSortPriority('import');
-        doTheSorting('import_datetime');
+        doTheSorting('import_datetime', importDirection);
+
+        if (importDirection < 0) {
+            setImportDirection(1);
+        } else if (importDirection > 0) {
+            setImportDirection(-1);
+        }
     }
 
     function handleTrendingClick() {
-        console.log('it did trending');
-        setSortPriority('trending');
-        doTheSorting('trending_datetime');
+        doTheSorting('trending_datetime', trendingDirection);
+
+        if (trendingDirection < 0) {
+            setTrendingDirection(1);
+        } else if (trendingDirection > 0) {
+            setTrendingDirection(-1);
+        }
     }
 
     function handleTitleClick() {
 
         console.log('it did title');
-        setSortPriority('title');
 
         let orderedList = gifList;
 
-        gifList.sort( function(a, b) {
-            // console.log(a.title)
-            // console.log(b.title)
+        orderedList.sort( function(a, b) {
             const c = a.title;
             const d = b.title;
 
             console.log(c-d);
 
+            let answer = 0;
+
             if (c < d) {
-                return -1
+                if (titleDirection > 0) {
+                    answer = -1
+                } else if (titleDirection < 0) {
+                    answer = 1;
+                }
             } else if ( d < c ) {
-                return 1 
-            } else {
-                return 0
-            }
+                if (titleDirection > 0) {
+                    answer = 1
+                } else if (titleDirection < 0) {
+                    answer = -1;
+                } 
+            } 
+
+            return answer;
         })
 
-        console.log(orderedList);
-
         setGifList(orderedList);
+
+        if (titleDirection > 0) {
+            setTitleDirection(-1);
+        } else if (titleDirection < 0) {
+            setTitleDirection(1);
+        }
     }
     
 
