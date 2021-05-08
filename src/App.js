@@ -6,8 +6,7 @@ import GifDetails from './GifDetails';
 function App() {
 
   
-  // for "home" page --> 
-  //   fetch to "trending" endpoint, display list
+  
   
 
   // for "individual" page --> 
@@ -24,7 +23,6 @@ function App() {
         />
         <Route 
           path='/gif/:gifId'
-          exact
           component={GifDetails}
         />
       </>
@@ -39,14 +37,7 @@ function App() {
       <h1>
         GIFs emporium
       </h1>
-      <div className='content-container'>
-        <div>
-          Sometimes this will be a list of gifs
-        </div>
-        <div>
-          Sometimes this will be more detailed info about a single gif
-        </div>
-      </div>
+      {renderContent()}
     </div>
   );
 }
